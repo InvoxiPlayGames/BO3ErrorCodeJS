@@ -1,0 +1,95 @@
+<!--
+    BO3ErrorCodeJS - Single page website to decode a Black Ops 3 connection error code.
+    by Emma/InvoxiPlayGames, 18-12-2024
+    SPDX-License-Identifier: MIT
+    https://github.com/InvoxiPlayGames/BO3ErrorCodeJS
+-->
+<title>BO3ErrorCodeJS</title>
+<script>
+var bitstxt = `User isn't a guest
+!Connected to platform services (Steam, Live, PSN...)
+!Connected to Demonware (Activision)
+!Stats downloaded
+!Loadouts downloaded
+User can play multiplayer (Gold, PS+, Parental Controls...)
+!Networking initialised
+!FFOTD downloaded
+!Playlists downloaded
+!FFOTD valid
+Time is synced
+Contracts downloaded
+Leagues downloaded
+!Matchmaking geolocation found
+Elite subscription downloaded
+Create-A-Class import attempted
+!Dedicated server pings done
+Retrieved signed stats keys
+Dedicated server pings responded OK
+!Valve Anti-Cheat initialised (Steam only!)
+!Publisher variables initialised
+!Save data initialised
+!LPC initialised
+!Console details reported
+!Inventory fetched
+DDLs in sync with Demonware
+!COD Points checked
+Marketing messages recieved
+!System is not down for maintainance`;
+
+var letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabc";
+
+function parseBits(inputstr) {
+    if (inputstr.length != 29 && inputstr.length != (29 * 2)) {
+        return; // invalid length
+    }
+    // filter down all the dots
+    var strToParse = inputstr;
+    if (inputstr.length == (29 * 2)) {
+        strToParse = "";
+        for (var i = 0; i < (29 * 2); i += 2)
+            strToParse += inputstr[i];
+    }
+    // parse the string
+    for (var i = 0; i < 29; i++) {
+        document.getElementById(`bit${i+1}`).checked = strToParse[i] == letters[i];
+    }
+}
+
+function loadBits() {
+    var bitn = 1;
+    document.querySelector("#reportBits").innerHTML = "";
+    // parse the big text file
+    bitstxt.split("\n").forEach((b) => {
+        var important = false;
+        var bitname = b;
+        if (b[0] === '!') { // required bit flag
+            bitname = "<b>" + b.substring(1) + "</b>";
+        }
+        // create the checkbox
+        var newElement = `<input type="checkbox" id="bit${bitn}" name="bit${bitn}" onclick="return false"><label for="bit${bitn}"> ${bitname}</label><br>`;
+        document.querySelector("#reportBits").innerHTML += newElement;
+        bitn++;
+    })
+}
+</script>
+
+<div id="errorCodeInput">
+<!-- test error code: A.B.C.D.E.F.-.H.I.J.K.-.-.N.-.-.-.-.-.-.U.V.W.X.Y.Z.a.b.c. -->
+Error Code: <input type="text" id="errCode" name="errCode" style="width:360px" placeholder="A.B.C.D.E.F.G.H.I.J.K.L.M.N.O.P.Q.R.S.T.U.V.W.X.Y.Z.a.b.c." value=""><br>
+<button onclick="parseBits(document.getElementById('errCode').value)">Parse Error Code</button>
+</div>
+
+<div id="reportBits">
+Loading... (JavaScript must be enabled)
+</div>
+<b>Bold</b> = required. (The game won't connect without these checked.)
+
+<script>
+// load these after the page is ready
+document.getElementById("errCode").value = "";
+loadBits();
+</script>
+
+<br><br>
+Website source code: <a href="https://github.com/InvoxiPlayGames/BO3ErrorCodeJS">https://github.com/InvoxiPlayGames/BO3ErrorCodeJS</a><br>
+<small>(or use Inspect Element...)</small>
